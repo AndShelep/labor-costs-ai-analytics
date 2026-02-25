@@ -33,3 +33,27 @@ pd.DataFrame([{
     "end_costs": float(ukraine_trend["costs"].iloc[-1]),
     "total_growth": float(growth),
 }]).to_csv(f"{OUT_DIR}/q1_ukraine_summary.csv", index=False)
+
+#research question №2
+# Найбільші та найменші витрати (останній рік)
+latest_year = int(df["year"].max())
+latest_data = df[df["year"] == latest_year]
+
+max_region = latest_data.loc[latest_data["costs"].idxmax()]
+min_region = latest_data.loc[latest_data["costs"].idxmin()]
+
+print("\n=== Highest & Lowest Regions in", latest_year, "===")
+print("Max:", max_region["region"], max_region["costs"])
+print("Min:", min_region["region"], min_region["costs"])
+
+latest_sorted = latest_data.sort_values("costs", ascending=False)
+top5 = latest_sorted.head(5)[["region", "year", "costs"]]
+bottom5 = latest_sorted.tail(5)[["region", "year", "costs"]]
+
+top5.to_csv(f"{OUT_DIR}/q2_top5_latest_year.csv", index=False)
+bottom5.to_csv(f"{OUT_DIR}/q2_bottom5_latest_year.csv", index=False)
+
+pd.DataFrame([
+    {"type": "max", "year": latest_year, "region": max_region["region"], "costs": float(max_region["costs"])},
+    {"type": "min", "year": latest_year, "region": min_region["region"], "costs": float(min_region["costs"])},
+]).to_csv(f"{OUT_DIR}/q2_extremes_latest_year.csv", index=False)
