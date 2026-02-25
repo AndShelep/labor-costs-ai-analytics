@@ -75,3 +75,22 @@ crisis_mean.reset_index().to_csv(f"{OUT_DIR}/q3_crisis_mean_change.csv", index=F
 crisis_years[["region", "year", "costs", "lag", "change"]].to_csv(
     f"{OUT_DIR}/q3_crisis_by_region.csv", index=False
 )
+
+#Прогнозування витрат на утримання робочої сили
+series = ukraine_df.set_index("year")["costs"]
+
+model = ARIMA(series, order=(1, 1, 1))
+model_fit = model.fit()
+
+forecast = model_fit.forecast(steps=1)
+
+print("Forecast for next 1 years:")
+print(forecast)
+
+forecast_df = forecast.reset_index()
+forecast_df.columns = ["year", "forecast_costs"]
+forecast_df.to_csv(f"{OUT_DIR}/arima_ukraine_forecast.csv", index=False)
+
+fitted_df = model_fit.fittedvalues.reset_index()
+fitted_df.columns = ["year", "fitted_costs"]
+fitted_df.to_csv(f"{OUT_DIR}/arima_ukraine_fitted.csv", index=False)
