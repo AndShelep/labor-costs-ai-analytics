@@ -8,5 +8,6 @@ __pycache__/
 
 data/raw/
 data/processed/
+data/research-tables/
 
 .idea/
