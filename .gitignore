@@ -10,4 +10,6 @@ data/raw/
 data/processed/
 data/research-tables/
 
+reports/figures
+
 .idea/
