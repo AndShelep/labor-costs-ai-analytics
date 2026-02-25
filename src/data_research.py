@@ -57,3 +57,21 @@ pd.DataFrame([
     {"type": "max", "year": latest_year, "region": max_region["region"], "costs": float(max_region["costs"])},
     {"type": "min", "year": latest_year, "region": min_region["region"], "costs": float(min_region["costs"])},
 ]).to_csv(f"{OUT_DIR}/q2_extremes_latest_year.csv", index=False)
+
+# research question 3:
+# Перевірка кризових років (середні зміни)
+df_sorted = df.sort_values(["region", "year"]).copy()
+df_sorted["lag"] = df_sorted.groupby("region")["costs"].shift(1)
+df_sorted["change"] = df_sorted["costs"] - df_sorted["lag"]
+
+crisis_years = df_sorted[df_sorted["year"].isin([2008, 2009, 2014, 2015])]
+
+print("\n=== Crisis Years Changes ===")
+crisis_mean = crisis_years.groupby("year")["change"].mean()
+print(crisis_mean)
+
+crisis_mean.reset_index().to_csv(f"{OUT_DIR}/q3_crisis_mean_change.csv", index=False)
+
+crisis_years[["region", "year", "costs", "lag", "change"]].to_csv(
+    f"{OUT_DIR}/q3_crisis_by_region.csv", index=False
+)
