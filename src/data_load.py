@@ -1,7 +1,7 @@
 import pandas as pd
 
 def load_data():
-    df = pd.read_csv("../data/raw/costs.csv")
+    df = pd.read_csv("./data/raw/costs.csv")
     return df
 
 

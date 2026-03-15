@@ -2,8 +2,8 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
-TABLES_DIR = "../data/research-tables"
-FIG_DIR = "../reports/figures"
+TABLES_DIR = "./data/research-tables"
+FIG_DIR = "./reports/figures"
 os.makedirs(FIG_DIR, exist_ok=True)
 
 # -------------------------

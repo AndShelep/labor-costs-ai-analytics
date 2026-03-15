@@ -6,10 +6,10 @@ def save_csv(df, filename):
     os.makedirs(OUT_DIR, exist_ok=True)
     df.to_csv(f"{OUT_DIR}/{filename}", index=False)
 
-OUT_DIR = "reports/research-tables"
+OUT_DIR = "./data/research-tables"
 os.makedirs(OUT_DIR, exist_ok=True)
 
-df = pd.read_csv("../data/processed/costs-clean.csv")
+df = pd.read_csv("./data/processed/costs-clean.csv")
 
 #research question №1
 # Довгострокова тенденція (по Україні загалом)

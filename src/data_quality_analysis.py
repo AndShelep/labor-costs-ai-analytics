@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_csv("../data/raw/costs.csv")
+df = pd.read_csv("./data/raw/costs.csv")
 
 print("Shape:", df.shape)
 print("Columns:", df.columns.tolist())
@@ -24,6 +24,6 @@ print("Columns:", df.columns.tolist())
 print("Rows:", len(df))
 print("Missing costs:", df["costs"].isna().sum())
 
-df.to_csv("../data/processed/costs-clean.csv", index=False)
+df.to_csv("./data/processed/costs-clean.csv", index=False)
 
 print("\nSaved to data/processed/costs-clean.csv")
