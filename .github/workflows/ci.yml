@@ -75,11 +75,17 @@ jobs:
           mkdir -p artifacts/data_quality_analysis
           python -m src.data_quality_analysis > artifacts/data_quality_analysis/run.log 2>&1
 
-      - name: Upload data_quality_analysis artifacts
+      - name: Upload quality report artifacts
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-data_quality_analysis
           path: artifacts/data_quality_analysis
+
+      - name: Upload processed dataset
+        uses: actions/upload-artifact@v4
+        with:
+          name: processed-data
+          path: data/processed/costs-clean.csv
 
   data_research:
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.module == 'all' || github.event.inputs.module == 'data_research' }}
@@ -101,16 +107,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Download processed data
+        uses: actions/download-artifact@v4
+        with:
+          name: processed-data
+          path: data/processed
+
       - name: Run data_research
         run: |
           mkdir -p artifacts/data_research
           python -m src.data_research > artifacts/data_research/run.log 2>&1
 
-      - name: Upload data_research artifacts
+      - name: Upload research report artifacts
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-data_research
           path: artifacts/data_research
+
+      - name: Upload research tables
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-tables
+          path: data/research-tables
 
   visualization:
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.module == 'all' || github.event.inputs.module == 'visualization' }}
@@ -132,11 +150,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Download research tables
+        uses: actions/download-artifact@v4
+        with:
+          name: research-tables
+          path: data/research-tables
+
       - name: Run visualization
         run: |
           mkdir -p artifacts/visualization
           python -m src.visualization > artifacts/visualization/run.log 2>&1
-
+        
       - name: Upload visualization artifacts
         uses: actions/upload-artifact@v4
         with:
