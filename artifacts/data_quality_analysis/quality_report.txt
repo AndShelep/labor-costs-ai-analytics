@@ -1,7 +1,0 @@
-DATA QUALITY ANALYSIS REPORT
-============================
-Rows: 419
-Columns: ['region', 'year', 'costs']
-Missing costs before cleaning: 12
-Missing costs after cleaning: 0
-Cleaned file saved to: ./data/processed/costs-clean.csv
