@@ -1,0 +1,35 @@
+name: CI (self-hosted)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-visualization-local:
+    runs-on: [self-hosted, linux, wsl]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Python
+        run: |
+          python3 --version
+          pip3 --version
+
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install -r requirements.txt
+
+      - name: Run full pipeline locally
+        run: |
+          python3 -m src.data_load
+          python3 -m src.data_quality_analysis
+          python3 -m src.data_research
+          python3 -m src.visualization
+
+      - name: Upload visualization artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-visualization-selfhosted
+          path: artifacts/visualization
