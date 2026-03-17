@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  run-visualization-local:
-    runs-on: [self-hosted, linux, wsl]
+  run-data-load-local:
+    runs-on: [self-hosted, linux, x64]
 
     steps:
       - name: Checkout repository
@@ -21,15 +21,13 @@ jobs:
           python3 -m pip install --upgrade pip
           pip3 install -r requirements.txt
 
-      - name: Run full pipeline locally
+      - name: Run data_load
         run: |
-          python3 -m src.data_load
-          python3 -m src.data_quality_analysis
-          python3 -m src.data_research
-          python3 -m src.visualization
+          mkdir -p artifacts/data_load
+          python3 -m src.data_load > artifacts/data_load/run.log 2>&1
 
-      - name: Upload visualization artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-visualization-selfhosted
-          path: artifacts/visualization
+          name: artifacts-data_load-selfhosted
+          path: artifacts/data_load
