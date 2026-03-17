@@ -19,6 +19,11 @@ on:
           - data_research
           - visualization
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   stage1:
     name: Stage 1 - ${{ matrix.module }}
@@ -156,3 +161,93 @@ jobs:
         with:
           name: artifacts-visualization
           path: artifacts/visualization
+
+  pages_prepare:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    needs: visualization
+
+    steps:
+      - name: Prepare site directory
+        run: mkdir -p site
+
+      - name: Download visualization artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: artifacts-visualization
+          path: site
+
+      - name: Create index.html
+        run: |
+          cat > site/index.html <<'EOF'
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Labor Costs Visualization</title>
+            <style>
+              body {
+                font-family: Arial, sans-serif;
+                max-width: 1100px;
+                margin: 40px auto;
+                padding: 0 20px;
+                line-height: 1.5;
+              }
+              h1, h2, p {
+                text-align: center;
+              }
+              img {
+                display: block;
+                max-width: 100%;
+                height: auto;
+                margin: 20px auto 40px auto;
+                border: 1px solid #ccc;
+              }
+            </style>
+          </head>
+          <body>
+            <h1>Labor Costs Analytics</h1>
+            <p>Visualization results published with GitHub Pages</p>
+          
+            <h2>Q1 Ukraine Trend</h2>
+            <img src="q1_ukraine_trend.png" alt="Q1 Ukraine Trend">
+          
+            <h2>Q1 Year-over-Year Change</h2>
+            <img src="q1_ukraine_yoy_change.png" alt="Q1 YoY Change">
+          
+            <h2>Top 5 Regions</h2>
+            <img src="q2_top5_regions.png" alt="Top 5 Regions">
+          
+            <h2>Bottom 5 Regions</h2>
+            <img src="q2_bottom5_regions.png" alt="Bottom 5 Regions">
+          
+            <h2>Max vs Min</h2>
+            <img src="q2_extremes_max_min.png" alt="Max vs Min">
+          
+            <h2>Crisis Years</h2>
+            <img src="q3_crisis_mean_change.png" alt="Crisis Years">
+          
+            <h2>ARIMA Forecast</h2>
+            <img src="arima_ukraine_forecast.png" alt="ARIMA Forecast">
+          </body>
+          </html>
+          EOF
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy_pages:
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    needs: pages_prepare
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
