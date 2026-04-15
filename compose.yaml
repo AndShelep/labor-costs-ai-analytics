@@ -1,0 +1,92 @@
+services:
+  data_load:
+    build:
+      context: .
+      dockerfile: data_load/Dockerfile
+    container_name: labor_data_load
+    volumes:
+      - ./data:/app/data
+      - ./db:/app/db
+      - ./artifacts:/app/artifacts
+    environment:
+      CSV_PATH: /app/data/raw/costs.csv
+      DB_DIR: /app/db
+      DB_PATH: /app/db/labor_costs.db
+      ARTIFACTS_DIR: /app/artifacts/data_load
+    networks:
+      - labor_network
+
+  data_quality_analysis:
+    build:
+      context: .
+      dockerfile: data_quality_analysis/Dockerfile
+    container_name: labor_data_quality_analysis
+    depends_on:
+      - data_load
+    volumes:
+      - ./data:/app/data
+      - ./db:/app/db
+      - ./artifacts:/app/artifacts
+    environment:
+      DB_PATH: /app/db/labor_costs.db
+      PROCESSED_DIR: /app/data/processed
+      ARTIFACTS_DIR: /app/artifacts/data_quality_analysis
+    networks:
+      - labor_network
+
+  data_research:
+    build:
+      context: .
+      dockerfile: data_research/Dockerfile
+    container_name: labor_data_research
+    depends_on:
+      - data_quality_analysis
+    volumes:
+      - ./data:/app/data
+      - ./db:/app/db
+      - ./artifacts:/app/artifacts
+    environment:
+      DB_PATH: /app/db/labor_costs.db
+      OUT_DIR: /app/data/research_tables
+      ARTIFACTS_DIR: /app/artifacts/data_research
+    networks:
+      - labor_network
+
+  visualization:
+    build:
+      context: .
+      dockerfile: visualization/Dockerfile
+    container_name: labor_visualization
+    depends_on:
+      - data_research
+    volumes:
+      - ./data:/app/data
+      - ./db:/app/db
+      - ./artifacts:/app/artifacts
+    environment:
+      TABLES_DIR: /app/data/research_tables
+      FIG_DIR: /app/artifacts/visualization
+    networks:
+      - labor_network
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    container_name: labor_web
+    depends_on:
+      - visualization
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./db:/app/db
+      - ./artifacts:/app/artifacts
+    environment:
+      REPORTS_DIR: /app/artifacts/visualization
+    networks:
+      - labor_network
+
+networks:
+  labor_network:
+    driver: bridge
