@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Графіки дослідження</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Графіки дослідження</h1>
+            <nav>
+                <a href="{{ url_for('index') }}">Головна</a>
+                <a href="{{ url_for('charts') }}">Графіки</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <h2>Результати візуалізації</h2>
+
+            {% if chart_files %}
+                <div class="charts-grid">
+                    {% for chart in chart_files %}
+                        <div class="chart-card">
+                            <h3>{{ chart }}</h3>
+                            <img src="{{ url_for('figures', filename=chart) }}" alt="{{ chart }}">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>Графіки ще не знайдено. Переконайся, що сервіс visualization вже створив PNG-файли у reports/figures.</p>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>
