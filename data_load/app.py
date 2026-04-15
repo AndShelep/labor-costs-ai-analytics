@@ -1,15 +1,18 @@
 import os
 import sqlite3
 import pandas as pd
+from pathlib import Path
 
 
-CSV_PATH = "../data/raw/costs.csv"
-DB_DIR = "../db"
-DB_PATH = os.path.join(DB_DIR, "labor_costs.db")
+BASE_DIR = Path(__file__).resolve().parents[1]
+
+CSV_PATH = Path(os.getenv("CSV_PATH", BASE_DIR / "data" / "raw" / "costs.csv"))
+DB_DIR = Path(os.getenv("DB_DIR", BASE_DIR / "db"))
+DB_PATH = Path(os.getenv("DB_PATH", DB_DIR / "labor_costs.db"))
 TABLE_NAME = "costs"
 
-ARTIFACTS_DIR = "../artifacts/data_load"
-REPORT_PATH = os.path.join(ARTIFACTS_DIR, "data_summary.txt")
+ARTIFACTS_DIR = Path(os.getenv("ARTIFACTS_DIR", BASE_DIR / "artifacts" / "data_load"))
+REPORT_PATH = ARTIFACTS_DIR / "data_summary.txt"
 
 
 def load_data() -> pd.DataFrame:

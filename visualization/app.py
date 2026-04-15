@@ -3,9 +3,13 @@ import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from pathlib import Path
 
-TABLES_DIR = "../data/research-tables"
-FIG_DIR = "../artifacts/visualization"
+
+BASE_DIR = Path(__file__).resolve().parents[1]
+
+TABLES_DIR = Path(os.getenv("TABLES_DIR", BASE_DIR / "data" / "research-tables"))
+FIG_DIR = Path(os.getenv("FIG_DIR", BASE_DIR / "artifacts" / "visualization"))
 
 
 def check_required_file(path):
