@@ -14,3 +14,5 @@ data/research-tables/
 reports/figures
 
 .idea/
+
+.DS_Store
