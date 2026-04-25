@@ -11,7 +11,7 @@ variable "vm_name" {
 }
 
 variable "admin_username" {
-  default = "shelep"
+  default = "azureuser"
 }
 
 variable "repo_url" {
