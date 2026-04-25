@@ -47,7 +47,7 @@ services:
       - ./artifacts:/app/artifacts
     environment:
       DB_PATH: /app/db/labor_costs.db
-      OUT_DIR: /app/data/research_tables
+      OUT_DIR: /app/data/research-tables
       ARTIFACTS_DIR: /app/artifacts/data_research
     networks:
       - labor_network
@@ -64,7 +64,7 @@ services:
       - ./db:/app/db
       - ./artifacts:/app/artifacts
     environment:
-      TABLES_DIR: /app/data/research_tables
+      TABLES_DIR: /app/data/research-tables
       FIG_DIR: /app/artifacts/visualization
     networks:
       - labor_network

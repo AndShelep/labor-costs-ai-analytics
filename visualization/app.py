@@ -10,7 +10,7 @@ from pathlib import Path
 # === BASE PATH ===
 BASE_DIR = Path(__file__).resolve().parents[1]
 
-TABLES_DIR = Path(os.getenv("TABLES_DIR", BASE_DIR / "data" / "research_tables"))
+TABLES_DIR = Path(os.getenv("TABLES_DIR", BASE_DIR / "data" / "research-tables"))
 FIG_DIR = Path(os.getenv("FIG_DIR", BASE_DIR / "artifacts" / "visualization"))
 
 
