@@ -12,7 +12,6 @@ runcmd:
   - curl -fsSL https://get.docker.com | sh
   - systemctl enable docker
   - systemctl start docker
-  - usermod -aG docker azureuser
-  - mkdir -p /opt/labor-project
-  - git clone ${repo_url} /opt/labor-project
-  - cd /opt/labor-project && docker compose up --build -d
+  - mkdir -p /home/azureuser/app
+  - git clone ${repo_url} /home/azureuser/app
+  - cd /home/azureuser/app && docker compose -f compose.yaml up --build -d

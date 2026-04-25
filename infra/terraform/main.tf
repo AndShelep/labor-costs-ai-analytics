@@ -1,14 +1,3 @@
-terraform {
-  required_version = ">= 1.5.0"
-
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.100"
-    }
-  }
-}
-
 provider "azurerm" {
   features {}
 }
@@ -19,33 +8,34 @@ resource "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_virtual_network" "vnet" {
-  name                = "labor-vnet"
+  name                = "vnet-lab"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 }
 
 resource "azurerm_subnet" "subnet" {
-  name                 = "labor-subnet"
+  name                 = "internal"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
-  address_prefixes     = ["10.0.1.0/24"]
+  address_prefixes     = ["10.0.2.0/24"]
 }
 
-resource "azurerm_public_ip" "public_ip" {
-  name                = "labor-public-ip"
+resource "azurerm_public_ip" "pip" {
+  name                = "ip-labor-costs"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
 resource "azurerm_network_security_group" "nsg" {
-  name                = "labor-nsg"
+  name                = "nsg-labor-costs"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
   security_rule {
-    name                       = "Allow-SSH"
+    name                       = "SSH"
     priority                   = 1001
     direction                  = "Inbound"
     access                     = "Allow"
@@ -57,7 +47,7 @@ resource "azurerm_network_security_group" "nsg" {
   }
 
   security_rule {
-    name                       = "Allow-Web-5000"
+    name                       = "Web5000"
     priority                   = 1002
     direction                  = "Inbound"
     access                     = "Allow"
@@ -70,7 +60,7 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 resource "azurerm_network_interface" "nic" {
-  name                = "labor-nic"
+  name                = "nic-labor-costs"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -78,7 +68,7 @@ resource "azurerm_network_interface" "nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.public_ip.id
+    public_ip_address_id          = azurerm_public_ip.pip.id
   }
 }
 
@@ -94,16 +84,12 @@ resource "azurerm_linux_virtual_machine" "vm" {
   size                = "Standard_B1s"
   admin_username      = var.admin_username
 
-  disable_password_authentication = false
-  admin_password                  = "Password12345!"
-
   network_interface_ids = [
     azurerm_network_interface.nic.id
   ]
 
-  custom_data = base64encode(templatefile("${path.module}/cloud-init.yaml", {
-    repo_url = var.repo_url
-  }))
+  admin_password                  = "DevOpsPass1234!"
+  disable_password_authentication = false
 
   os_disk {
     caching              = "ReadWrite"
@@ -116,4 +102,8 @@ resource "azurerm_linux_virtual_machine" "vm" {
     sku       = "22_04-lts"
     version   = "latest"
   }
+
+  custom_data = base64encode(templatefile("${path.module}/cloud-init.yaml", {
+    repo_url = var.repo_url
+  }))
 }

@@ -1,13 +1,13 @@
 variable "resource_group_name" {
-  default = "labor-costs-rg"
+  default = "rg-labor-costs-lab4"
 }
 
 variable "location" {
-  default = "westeurope"
+  default = "northeurope"
 }
 
 variable "vm_name" {
-  default = "labor-costs-vm"
+  default = "vm-labor-costs"
 }
 
 variable "admin_username" {
