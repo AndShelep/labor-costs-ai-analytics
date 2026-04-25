@@ -15,3 +15,4 @@ runcmd:
   - mkdir -p /home/azureuser/app
   - git clone ${repo_url} /home/azureuser/app
   - cd /home/azureuser/app && docker compose -f compose.yaml up --build -d
+  - cd /home/azureuser/app/monitoring && docker compose -f docker-compose.monitoring.yml up -d
