@@ -23,6 +23,7 @@ services:
     container_name: labor_data_quality_analysis
     depends_on:
       - data_load
+    restart: on-failure
     volumes:
       - ./data:/app/data
       - ./db:/app/db
@@ -41,6 +42,7 @@ services:
     container_name: labor_data_research
     depends_on:
       - data_quality_analysis
+    restart: on-failure
     volumes:
       - ./data:/app/data
       - ./db:/app/db
@@ -59,6 +61,7 @@ services:
     container_name: labor_visualization
     depends_on:
       - data_research
+    restart: on-failure
     volumes:
       - ./data:/app/data
       - ./db:/app/db
@@ -76,6 +79,7 @@ services:
     container_name: labor_web
     depends_on:
       - visualization
+    restart: on-failure
     ports:
       - "5000:5000"
     volumes:
