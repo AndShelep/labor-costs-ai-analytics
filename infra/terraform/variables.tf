@@ -1,5 +1,5 @@
 variable "resource_group_name" {
-  default = "rg-labor-costs-lab4"
+  default = "rg-labor-costs"
 }
 
 variable "location" {

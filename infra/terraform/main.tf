@@ -1,3 +1,14 @@
+terraform {
+  required_version = ">= 1.5.0"
+
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 3.116"
+    }
+  }
+}
+
 provider "azurerm" {
   features {}
 }
@@ -81,7 +92,7 @@ resource "azurerm_linux_virtual_machine" "vm" {
   name                = var.vm_name
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-  size                = "Standard_B1ms"
+  size                = "Standard_D2s_v3"
   admin_username      = var.admin_username
 
   network_interface_ids = [
