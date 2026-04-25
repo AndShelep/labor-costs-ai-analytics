@@ -3,7 +3,7 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-  default = "swedencentral"
+  default = "northeurope"
 }
 
 variable "vm_name" {
