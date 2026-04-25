@@ -1,21 +1,39 @@
 import os
+import time
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from pathlib import Path
 
-TABLES_DIR = "../data/research-tables"
-FIG_DIR = "../artifacts/visualization"
+
+# === BASE PATH ===
+BASE_DIR = Path(__file__).resolve().parents[1]
+
+TABLES_DIR = Path(os.getenv("TABLES_DIR", BASE_DIR / "data" / "research_tables"))
+FIG_DIR = Path(os.getenv("FIG_DIR", BASE_DIR / "artifacts" / "visualization"))
+
+
+# === WAITING MECHANISM ===
+def wait_for_file(path, timeout=60, interval=2):
+    for _ in range(timeout // interval):
+        if os.path.exists(path):
+            return True
+        print(f"[WAIT] Waiting for file: {path}")
+        time.sleep(interval)
+    return False
 
 
 def check_required_file(path):
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"Required file not found: {path}")
+    if not wait_for_file(path):
+        raise FileNotFoundError(f"Required file not found after waiting: {path}")
 
 
+# === Q1 ===
 def plot_q1():
-    q1_path = f"{TABLES_DIR}/q1_ukraine_trend.csv"
+    q1_path = TABLES_DIR / "q1_ukraine_trend.csv"
     check_required_file(q1_path)
+
     q1 = pd.read_csv(q1_path)
 
     plt.figure(figsize=(9, 5))
@@ -25,7 +43,7 @@ def plot_q1():
     plt.ylabel("Costs")
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(f"{FIG_DIR}/q1_ukraine_trend.png", dpi=200)
+    plt.savefig(FIG_DIR / "q1_ukraine_trend.png", dpi=200)
     plt.close()
 
     if "yoy_change" in q1.columns:
@@ -36,13 +54,14 @@ def plot_q1():
         plt.ylabel("YoY change")
         plt.grid(True, axis="y")
         plt.tight_layout()
-        plt.savefig(f"{FIG_DIR}/q1_ukraine_yoy_change.png", dpi=200)
+        plt.savefig(FIG_DIR / "q1_ukraine_yoy_change.png", dpi=200)
         plt.close()
 
 
+# === Q2 ===
 def plot_q2():
-    top5_path = f"{TABLES_DIR}/q2_top5_latest_year.csv"
-    bottom5_path = f"{TABLES_DIR}/q2_bottom5_latest_year.csv"
+    top5_path = TABLES_DIR / "q2_top5_latest_year.csv"
+    bottom5_path = TABLES_DIR / "q2_bottom5_latest_year.csv"
 
     check_required_file(top5_path)
     check_required_file(bottom5_path)
@@ -60,7 +79,7 @@ def plot_q2():
     plt.xticks(rotation=30, ha="right")
     plt.grid(True, axis="y")
     plt.tight_layout()
-    plt.savefig(f"{FIG_DIR}/q2_top5_regions.png", dpi=200)
+    plt.savefig(FIG_DIR / "q2_top5_regions.png", dpi=200)
     plt.close()
 
     year_bottom = int(bottom5["year"].iloc[0]) if "year" in bottom5.columns else "latest"
@@ -73,11 +92,11 @@ def plot_q2():
     plt.xticks(rotation=30, ha="right")
     plt.grid(True, axis="y")
     plt.tight_layout()
-    plt.savefig(f"{FIG_DIR}/q2_bottom5_regions.png", dpi=200)
+    plt.savefig(FIG_DIR / "q2_bottom5_regions.png", dpi=200)
     plt.close()
 
-    extremes_path = f"{TABLES_DIR}/q2_extremes_latest_year.csv"
-    if os.path.exists(extremes_path):
+    extremes_path = TABLES_DIR / "q2_extremes_latest_year.csv"
+    if extremes_path.exists():
         ext = pd.read_csv(extremes_path)
         year_ext = int(ext["year"].iloc[0]) if "year" in ext.columns else "latest"
 
@@ -88,13 +107,15 @@ def plot_q2():
         plt.ylabel("Costs")
         plt.grid(True, axis="y")
         plt.tight_layout()
-        plt.savefig(f"{FIG_DIR}/q2_extremes_max_min.png", dpi=200)
+        plt.savefig(FIG_DIR / "q2_extremes_max_min.png", dpi=200)
         plt.close()
 
 
+# === Q3 ===
 def plot_q3():
-    q3_path = f"{TABLES_DIR}/q3_crisis_mean_change.csv"
+    q3_path = TABLES_DIR / "q3_crisis_mean_change.csv"
     check_required_file(q3_path)
+
     q3 = pd.read_csv(q3_path)
 
     if "change" in q3.columns:
@@ -115,12 +136,13 @@ def plot_q3():
     plt.ylabel(y_label)
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(f"{FIG_DIR}/{filename}", dpi=200)
+    plt.savefig(FIG_DIR / filename, dpi=200)
     plt.close()
 
 
+# === FORECAST ===
 def plot_forecast():
-    hist_path = f"{TABLES_DIR}/q1_ukraine_trend.csv"
+    hist_path = TABLES_DIR / "q1_ukraine_trend.csv"
     check_required_file(hist_path)
 
     hist = pd.read_csv(hist_path).sort_values("year")
@@ -128,13 +150,13 @@ def plot_forecast():
     plt.figure(figsize=(9, 5))
     plt.plot(hist["year"], hist["costs"], marker="o", label="Historical")
 
-    fitted_path = f"{TABLES_DIR}/arima_ukraine_fitted.csv"
-    if os.path.exists(fitted_path):
+    fitted_path = TABLES_DIR / "arima_ukraine_fitted.csv"
+    if fitted_path.exists():
         fitted = pd.read_csv(fitted_path).sort_values("year")
         plt.plot(fitted["year"], fitted["fitted_costs"], label="ARIMA fitted")
 
-    forecast_path = f"{TABLES_DIR}/arima_ukraine_forecast.csv"
-    if os.path.exists(forecast_path):
+    forecast_path = TABLES_DIR / "arima_ukraine_forecast.csv"
+    if forecast_path.exists():
         fc = pd.read_csv(forecast_path).sort_values("year")
         plt.plot(fc["year"], fc["forecast_costs"], marker="o", label="Forecast")
 
@@ -144,19 +166,22 @@ def plot_forecast():
     plt.grid(True)
     plt.legend()
     plt.tight_layout()
-    plt.savefig(f"{FIG_DIR}/arima_ukraine_forecast.png", dpi=200)
+    plt.savefig(FIG_DIR / "arima_ukraine_forecast.png", dpi=200)
     plt.close()
 
 
+# === MAIN ===
 def main():
     os.makedirs(FIG_DIR, exist_ok=True)
+
+    print("Starting visualization service...")
 
     plot_q1()
     plot_q2()
     plot_q3()
     plot_forecast()
 
-    print("Graphs have been saved to reports/figures/")
+    print("Graphs successfully generated!")
 
 
 if __name__ == "__main__":

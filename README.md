@@ -38,3 +38,27 @@
 ## Етап візуалізації
 
 Додано код для побудови та відображення графіків результатів, отримані на етапі дослідження
+
+
+# Інструкція запуску
+
+## Вимоги
+
+- Docker Desktop
+
+Кроки для запуску:
+
+```bash
+У терміналі вводяться наступні команди:
+
+docker --version
+docker compose version
+
+docker compose up --build
+
+Для ручного запуску кожного модуля окремо потрібно послідовно виконати наступні команди:
+docker run --rm -v ${PWD}/data:/app/data -v ${PWD}/db:/app/db -v ${PWD}/artifacts:/app/artifacts labor-data-load
+docker run --rm -v ${PWD}/data:/app/data -v ${PWD}/db:/app/db -v ${PWD}/artifacts:/app/artifacts labor-data-quality
+docker run --rm -v ${PWD}/data:/app/data -v ${PWD}/db:/app/db -v ${PWD}/artifacts:/app/artifacts labor-data-research
+docker run --rm -v ${PWD}/data:/app/data -v ${PWD}/db:/app/db -v ${PWD}/artifacts:/app/artifacts labor-visualization
+docker run --rm -p 5000:5000 -v ${PWD}/data:/app/data -v ${PWD}/db:/app/db -v ${PWD}/artifacts:/app/artifacts labor-web

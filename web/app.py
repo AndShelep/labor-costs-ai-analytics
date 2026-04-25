@@ -1,18 +1,20 @@
 from flask import Flask, render_template, send_from_directory
 import os
 import glob
+from pathlib import Path
 
 
 app = Flask(__name__)
 
-REPORTS_DIR = "../reports/figures"
+BASE_DIR = Path(__file__).resolve().parents[1]
+REPORTS_DIR = Path(os.getenv("REPORTS_DIR", BASE_DIR / "artifacts" / "visualization"))
 
 
 def get_chart_files():
     if not os.path.exists(REPORTS_DIR):
         return []
 
-    files = glob.glob(os.path.join(REPORTS_DIR, "*.png"))
+    files = glob.glob(str(REPORTS_DIR / "*.png"))
     files = [os.path.basename(f) for f in files]
     files.sort()
     return files

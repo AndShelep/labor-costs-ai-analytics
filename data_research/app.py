@@ -1,14 +1,17 @@
 import os
 import sqlite3
 import pandas as pd
+from pathlib import Path
 from statsmodels.tsa.arima.model import ARIMA
 
 
-DB_PATH = "../db/labor_costs.db"
+BASE_DIR = Path(__file__).resolve().parents[1]
+
+DB_PATH = Path(os.getenv("DB_PATH", BASE_DIR / "db" / "labor_costs.db"))
 SOURCE_TABLE = "costs_cleaned"
 
-OUT_DIR = "../data/research_tables"
-ARTIFACTS_DIR = "../artifacts/data_research"
+OUT_DIR = Path(os.getenv("OUT_DIR", BASE_DIR / "data" / "research-tables"))
+ARTIFACTS_DIR = Path(os.getenv("ARTIFACTS_DIR", BASE_DIR / "artifacts" / "data_research"))
 
 
 def save_csv(df, filename):
