@@ -3,7 +3,7 @@ variable "resource_group_name" {
 }
 
 variable "location" {
-  default = "North Europe"
+  default = "eastus"
 }
 
 variable "vm_name" {
