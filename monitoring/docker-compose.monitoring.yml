@@ -50,5 +50,4 @@ volumes:
 
 networks:
   labor_network:
-    external: true
     name: labor_labor_network
