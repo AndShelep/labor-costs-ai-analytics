@@ -4,15 +4,55 @@ package_upgrade: true
 
 packages:
   - git
-  - ca-certificates
-  - curl
-  - gnupg
+  - docker.io
+  - docker-compose
 
 runcmd:
-  - curl -fsSL https://get.docker.com | sh
   - systemctl enable docker
   - systemctl start docker
   - mkdir -p /home/azureuser/app
   - git clone ${repo_url} /home/azureuser/app
-  - cd /home/azureuser/app && docker compose -p labor -f compose.yaml up --build -d
-  - cd /home/azureuser/app/monitoring && docker compose -p labor -f docker-compose.monitoring.yml up -d
+  - cd /home/azureuser/app
+  - |
+    cat <<EOF > /home/azureuser/app/docker-compose.monitoring.yml
+    version: '3.8'
+    services:
+      prometheus:
+        image: prom/prometheus:latest
+        container_name: labor_prometheus
+        volumes:
+          - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+        ports:
+          - "9090:9090"
+        restart: always
+
+      grafana:
+        image: grafana/grafana:latest
+        container_name: labor_grafana
+        ports:
+          - "3000:3000"
+        environment:
+          - GF_SECURITY_ADMIN_USER=admin
+          - GF_SECURITY_ADMIN_PASSWORD=admin
+        restart: always
+
+      node-exporter:
+        image: prom/node-exporter:latest
+        container_name: labor_node_exporter
+        ports:
+          - "9100:9100"
+        restart: always
+
+      cadvisor:
+        image: gcr.io/cadvisor/cadvisor:latest
+        container_name: labor_cadvisor
+        volumes:
+          - /:/rootfs:ro
+          - /var/run:/var/run:rw
+          - /sys:/sys:ro
+          - /var/lib/docker/:/var/lib/docker:ro
+        ports:
+          - "8080:8080"
+        restart: always
+    EOF
+  - cd /home/azureuser/app && docker-compose -f compose.yaml -f docker-compose.monitoring.yml up --build -d
