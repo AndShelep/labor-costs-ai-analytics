@@ -18,6 +18,3 @@ spec:
           image: andshelep/labor-web:latest
           ports:
             - containerPort: 5000
-          env:
-            - name: APP_VERSION
-              value: "v2"
