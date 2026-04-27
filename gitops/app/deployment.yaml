@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: labor-web
-          image: andshelep/labor-web:latest
+          image: andshelep/labor-web:v3
           ports:
             - containerPort: 5000
