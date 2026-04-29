@@ -2,8 +2,10 @@ from flask import Flask, render_template, send_from_directory
 import os
 import glob
 from pathlib import Path
+from prometheus_client import Counter, generate_latest
+from flask import Response
 
-
+REQUEST_COUNT = Counter('app_requests_total', 'Total number of requests')
 app = Flask(__name__)
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -24,6 +26,10 @@ def get_chart_files():
 def index():
     return render_template("index.html")
 
+@app.route("/metrics")
+def metrics():
+    REQUEST_COUNT.inc()
+    return Response(generate_latest(), mimetype="text/plain")
 
 @app.route("/charts")
 def charts():
