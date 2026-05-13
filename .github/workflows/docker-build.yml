@@ -27,4 +27,6 @@ jobs:
           context: .
           file: web/Dockerfile
           push: true
-          tags: andshelep/labor-web:latest
+          tags: |
+            andshelep/labor-web:latest
+            andshelep/labor-web:v3
